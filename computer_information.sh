@@ -22,7 +22,23 @@ function get_ram_info(){
 }
 
 function get_cpu_information(){
-	echo "f"
+	cpu_mhz=`grep -i "cpu mhz" /proc/cpuinfo | awk 'NR == 1 {print $4}'`
+	cpu_mhz=`echo "scale=1; $cpu_mhz/1000" | bc`
+	
+	cpu_cores=`grep "cpu cores" /proc/cpuinfo | awk 'NR==1 {print $4 }'`	
+	
+	cpu_cache=`grep "cache size" /proc/cpuinfo | awk 'NR==1 {print $4 }'`	
+	cpu_cache=`echo "scale=1; $cpu_cache/1024" | bc`
+	
+	cpu_name=`grep "model name" /proc/cpuinfo | awk 'NR==1 {print $4 $5 $6 }'`	
+
+	cpu_vendor=`grep "vendor_id" /proc/cpuinfo | awk 'NR==1 {print $3 }'`	
+	
+	echo "CPU vendor name:    $cpu_vendor" 
+	echo "CPU name:           $cpu_name "
+	echo "CPU frequency:      $cpu_mhz Ghz "
+	echo "CPU cores:          $cpu_cores"
+	echo "CPU caches size:    $cpu_cache Mb"
 }
 
 function get_disk_information(){
@@ -65,6 +81,9 @@ elif [ $1 = "-h" ]
 then
 	show_help
 	
+elif [ $1 = "-c" ]
+then 
+	get_cpu_information
 fi
 
 
